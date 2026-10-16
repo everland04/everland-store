@@ -57,9 +57,8 @@
    const response=await fetch('api/create-payment.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username.value.trim(),rank:rank})});
    const data=await response.json();
    if(!response.ok||!data.redirect_url||!data.order_id)throw new Error(data.error||'Transaksi belum dapat dibuat. Periksa konfigurasi backend.');
-   if(note)note.textContent='Pesanan '+data.order_id+' dibuat. Status: MENUNGGU PEMBAYARAN. Anda akan diarahkan ke halaman pembayaran Midtrans.';
-   if(notice)notice.scrollIntoView({behavior:'smooth',block:'center'});
-   window.location.href=data.redirect_url;
+   sessionStorage.setItem('everlandInvoice',JSON.stringify({order_id:data.order_id,username:username.value.trim(),rank:rank,amount:amount,payment_url:data.redirect_url,created_at:new Date().toISOString()}));
+   window.location.href='invoice.html?order_id='+encodeURIComponent(data.order_id);
   }catch(err){if(note)note.textContent='Gagal membuat pembayaran otomatis: '+err.message+'. Pastikan website sudah diunggah ke hosting PHP dan API Midtrans sudah dikonfigurasi.';if(notice)notice.scrollIntoView({behavior:'smooth',block:'center'});}
  });
  updatePayment();updateRankPrice();
